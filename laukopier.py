@@ -25,6 +25,9 @@ def valid_submission(submission, target):
     if target.subreddit in ignored_subreddits:
         return False
 
+    if not target.is_self:
+        return False
+
     return True
 
 
