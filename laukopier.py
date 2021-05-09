@@ -1,19 +1,21 @@
 import time
 import praw
+import os
 from prawcore import exceptions
-from dotenv import dotenv_values
+from dotenv import load_dotenv
 from loguru import logger
 
-config = dotenv_values(".env")
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(BASEDIR, '.env'))
 ignored_subreddits = ["legaladvice", "legaladviceofftopic"]
 logger.add("laukopier.log")
 
 client = praw.Reddit(
-    client_id=config["CLIENT_ID"],
-    client_secret=config["CLIENT_SECRET"],
-    password=config["PASSWORD"],
-    user_agent=config["USER_AGENT"],
-    username=config["USERNAME"]
+    client_id=os.getenv("CLIENT_ID"),
+    client_secret=os.getenv("CLIENT_SECRET"),
+    password=os.getenv("BOTPASSWORD"),
+    user_agent=os.getenv("USER_AGENT"),
+    username=os.getenv("BOTNAME")
 )
 
 
