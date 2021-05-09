@@ -71,9 +71,9 @@ def main():
         except exceptions.PrawcoreException:
             logger.exception("Sleep for 60 seconds.")
             time.sleep(60)
-        except Exception as e:
-            logger.critical("PROGRAM FAILED")
-            raise e
+        except Exception:
+            logger.exception("PROGRAM FAILED")
+            raise
 
 
 if __name__ == "__main__":
