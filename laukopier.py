@@ -8,7 +8,7 @@ from loguru import logger
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(BASEDIR, '.env'))
 ignored_subreddits = ["legaladvice", "legaladviceofftopic"]
-logger.add("laukopier.log")
+logger.add(os.path.join(BASEDIR, "laukopier.log"))
 
 client = praw.Reddit(
     client_id=os.getenv("CLIENT_ID"),
