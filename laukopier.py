@@ -4,6 +4,7 @@ import os
 from prawcore import exceptions
 from dotenv import load_dotenv
 from loguru import logger
+from discord_notifications import LaukopierError, LaukopierPost
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(BASEDIR, '.env'))
@@ -64,7 +65,10 @@ def main():
                 if valid_submission(submission, target):
                     message = format_message(target.selftext, target.title)
                     submission.reply(message)
+
+                    # Logging
                     logger.info(f"Replied: {target.title}")
+                    LaukopierPost(submission.title, f"https://reddit.com{submission.permalink}")
 
         except KeyboardInterrupt:
             break
@@ -73,6 +77,7 @@ def main():
             time.sleep(60)
         except Exception:
             logger.exception("PROGRAM FAILED")
+            LaukopierError("Program encountered fatal error.")
             raise
 
 
