@@ -55,7 +55,7 @@ def format_message(self_text, title):
 
 def main():
     logger.info("Started successfully.")
-    bola = client.subreddit("bestoflegaladvice")
+    bola = client.subreddit(os.getenv("TARGET_SUBREDDIT"))
 
     while True:
         try:
