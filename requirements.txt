@@ -1,0 +1,13 @@
+certifi==2021.10.8
+chardet==4.0.0
+charset-normalizer==2.0.9
+idna==3.3
+loguru==0.5.3
+praw==7.5.0
+prawcore==2.3.0
+python-dotenv==0.19.2
+requests==2.26.0
+six==1.16.0
+update-checker==0.18.0
+urllib3==1.26.7
+websocket-client==1.2.3

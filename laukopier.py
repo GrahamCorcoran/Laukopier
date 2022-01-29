@@ -4,12 +4,11 @@ import os
 from prawcore import exceptions
 from dotenv import load_dotenv
 from loguru import logger
-from discord_notifications import LaukopierError, LaukopierPost
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(BASEDIR, '.env'))
-ignored_subreddits = ["legaladvice", "legaladviceofftopic"]
-logger.add(os.path.join(BASEDIR, "laukopier.log"))
+ignored_subreddits = ["legaladviceofftopic"]
+logger.add("laukopier.log")
 
 client = praw.Reddit(
     client_id=os.getenv("CLIENT_ID"),
@@ -46,17 +45,17 @@ def format_message(self_text, title):
              " If you do, you may be banned from both subreddits." \
              "\n\n --- \n\n" \
              "Title: " + title + "\n\n" + "Body: \n\n"
-    footer = "\n\n This bot was created to capture threads missed by LocationBot" \
+    footer = "\n\n This bot was created to capture original threads" \
              " and is not affiliated with the mod team." \
              "\n\n [Concerns? Bugs?](https://www.reddit.com/message/compose/?to=GrahamCorcoran)" \
-             " | [Laukopier 2.0](https://github.com/GrahamCorcoran/Laukopier)"
+             " | [Laukopier 2.1](https://github.com/GrahamCorcoran/Laukopier)"
 
     return f"{header}{body}{footer}"
 
 
 def main():
     logger.info("Started successfully.")
-    bola = client.subreddit("bestoflegaladvice")
+    bola = client.subreddit(os.getenv("TARGET_SUBREDDIT"))
 
     while True:
         try:
@@ -64,11 +63,9 @@ def main():
                 target = client.submission(url=submission.url)
                 if valid_submission(submission, target):
                     message = format_message(target.selftext, target.title)
-                    submission.reply(message)
-
-                    # Logging
+                    laukopier_comment = submission.reply(message)
+                    laukopier_comment.mod.distinguish(sticky=True)
                     logger.info(f"Replied: {target.title}")
-                    LaukopierPost(submission.title, f"https://reddit.com{submission.permalink}")
 
         except KeyboardInterrupt:
             break
@@ -77,7 +74,6 @@ def main():
             time.sleep(60)
         except Exception:
             logger.exception("PROGRAM FAILED")
-            LaukopierError("Program encountered fatal error.")
             raise
 
 
