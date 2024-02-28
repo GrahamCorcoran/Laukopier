@@ -4,6 +4,7 @@ import os
 from prawcore import exceptions
 from dotenv import load_dotenv
 from loguru import logger
+from urllib.request import Request, urlopen
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(BASEDIR, '.env'))
@@ -52,6 +53,12 @@ def format_message(self_text, title):
 
     return f"{header}{body}{footer}"
 
+def handle_reddit_share_link(url):
+	req = Request(url)
+	resp = urlopen(req)
+	resp = resp.url.split("?")[0]
+    return resp.split("comments/")[1].split("/")[0]
+
 
 def main():
     logger.info("Started successfully.")
@@ -60,7 +67,11 @@ def main():
     while True:
         try:
             for submission in bola.stream.submissions(skip_existing=True):
-                target = client.submission(url=submission.url)
+                if "reddit.com" in submission.url and "/s/" in submission.url:
+                    id = handle_reddit_share_link(submission.url)
+                    target = client.submission(id)
+                else:
+                    target = client.submission(url=submission.url)
                 if valid_submission(submission, target):
                     message = format_message(target.selftext, target.title)
                     laukopier_comment = submission.reply(message)
